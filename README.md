@@ -3,11 +3,13 @@
 
 ## Approvals via REST API
 
-   - For an example of a Python project deployed on Azure that approves or rejects requests, see `API_approvals\examples\azure_container_app_proj`.
+   - For an example of a Python project deployed on Azure that approves or rejects requests, see `API_approvals/examples/azure_container_app_proj`.
 
-   - For an example of a JS project deployed on AWS as a lambda that approves or rejects requests, see `API_approvals\examples\lambda`.
+   - For an example of a JS project deployed on AWS as a lambda that approves or rejects requests, see `API_approvals/examples/lambda`.
 
-   - For a YAML file of a REST API, see `YAML\customer_example`.
+   - For a YAML file of a REST API, see `YAML/customer_example`.
+
+   - See `API_approvals/examples/README.md` for more information.  
 
 ## Approvals via Smart Contract
 
