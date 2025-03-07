@@ -1,0 +1,135 @@
+openapi: "3.1.0"
+info:
+    version: "0.0.1"
+    title: "Virtual Signer API"
+    description: Virtual Signer API - paths exposed by a Virtual Signer instance
+# For more information on HTTP Message signatures see http://www.watersprings.org/pub/id/draft-ietf-httpbis-message-signatures-03.html .
+
+paths:
+    /register-vs-device:
+        post:
+            summary: Register a new device.
+            requestBody:
+                description: Device and organization id
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/register-device-req"
+            responses:
+                "200":
+                    description: The device was registered.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/register-device-resp"
+    /version:
+      get:
+        summary: Retrieve the basic configuration of the Virtual Signer instance.
+        responses:
+          "200":
+            description: The basic configuration of the Virtual Signer instance.
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/version-resp"
+components:
+    schemas:
+        register-device-req:
+            type: object
+            required:
+                - DeviceName
+                - OrgId
+            properties:
+                DeviceName:
+                    type: string
+                OrgId:
+                    type: string
+        register-device-resp:
+            type: object
+            required:
+                - deviceId
+                - deviceName
+                - orgId
+            properties:
+                deviceId:
+                    type: string
+                deviceName:
+                    type: string
+                orgId:
+                    type: string
+        version-resp:
+          type: object
+          required:
+            - name
+            - version
+            - environment
+            - runningWithinSGX
+            - approvalMode
+            - bindingNetworkName
+            - initialDevice
+            - orgId
+            - port
+            - APIBaseURL
+            - traceSpanExporter
+            - devicesInBackend
+            - devicesInFileSystem
+            - devicesInBoth
+            - MQTTEndpoint
+            - MQTTCACert
+            - AuthClientId
+            - AuthClientSecret
+            - GraphQLService
+            - ApprovalSmartContractAddress
+          properties:
+            name:
+              type: string
+            version:
+              type: string
+            environment:
+              type: string
+            runningWithinSGX:
+              type: boolean
+            approvalMode:
+              type: string
+            bindingNetworkName:
+              type: string
+            initialDevice:
+              type: string
+            orgId:
+              type: string
+            port:
+              type: number
+            APIBaseURL:
+              type: string
+            traceSpanExporter:
+              type: string
+            devicesInBackend:
+              type: string
+            devicesInFileSystem:
+              type: string
+            devicesInBoth:
+              type: string
+            MQTTEndpoint:
+              type: string
+            MQTTCACert:
+              type: string
+            AuthClientId:
+              type: string
+            AuthClientSecret:
+              type: string
+            GraphQLService:
+              type: string
+            ApprovalSmartContractAddress:
+              type: string
+    securitySchemes:
+        http-signature:
+            # Each HTTP request is cryptographically signed as specified
+            # in https://datatracker.ietf.org/doc/draft-cavage-http-signatures/
+            type: http
+            scheme: signature
+security:
+    # For information on the HTTP Message Signatures standard, see https://datatracker.ietf.org/doc/draft-ietf-httpbis-message-signatures/.
+    - http-signature: []
+
+

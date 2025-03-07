@@ -1,0 +1,612 @@
+openapi: '3.1.0'
+info:
+  version: '0.0.2'
+  title: 'Customer Callback API'
+  description: This is a sample customer callback API exposed to the Virtual Signer. This is to be implemented by the customer. This API approves or rejects reshare and transaction requests.
+# For more information on HTTP Message signatures see http://www.watersprings.org/pub/id/draft-ietf-httpbis-message-signatures-03.html .
+
+paths:
+    /my-api/transaction-approval:
+        post:
+            summary: Asking the customer server to approve or reject the transaction.
+            requestBody:
+                description: Transaction details
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/transaction-approval-req"
+            parameters:
+              - name: Accept-Signature
+                in: header
+                required: true
+                schema:
+                    type: string         
+              - name: VS-Nonce
+                in: header
+                required: true
+                schema:
+                  type: number
+            responses:
+                '200':
+                    description: Signal the approval or rejection of the transaction.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/transaction-approval-resp'
+                    # For more information on HTTP Message signatures see http://www.watersprings.org/pub/id/draft-ietf-httpbis-message-signatures-03.html .
+                    headers:
+                        digest:
+                            description: http message digest
+                            schema:
+                                type: string
+                        Signature:
+                            description: http message signature 
+                            schema:
+                                type: string
+    /my-api/reshare-approval:
+        post:
+            summary: Asking the server to approve or reject a reshare request.
+            requestBody:
+                description: Reshare request details
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/reshare-approval-req"
+            parameters:
+              - name: Accept-Signature
+                in: header
+                required: true
+                schema:
+                  type: string
+              - name: VS-Nonce
+                in: header
+                required: true
+                schema:
+                  type: integer
+            responses:
+                '200':
+                    description: Signal the approval or rejection of the reshare request.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/reshare-approval-resp'
+                    # For more information on HTTP Message signatures see http://www.watersprings.org/pub/id/draft-ietf-httpbis-message-signatures-03.html .
+                    headers:
+                        digest:
+                            description: http response digest
+                            schema:
+                                type: string
+                        Signature:
+                            description: http response Signature 
+                            schema:
+                                type: string
+components:
+    schemas:
+        transaction-approval-req:
+            type: object
+            required:
+                - TransactionRequest
+            definitions: 
+              TransactionRequest: 
+                id: 
+                  type: string
+                displayId: 
+                  type: string
+                transactionRequestStatus: 
+                  type: string
+                createdAt: 
+                  type: string
+                  format: date-time
+                expiresAt: 
+                  type: string
+                  format: date-time
+                amountOriginal: 
+                  type: string
+                amountUsd: 
+                  type: string
+                receivingAddress: 
+                  type: string
+                rawtransactionId: 
+                  type: string
+                memo: 
+                  type: string
+                metadata: 
+                  type: object
+                  properties: 
+                    contractData: 
+                      type: string
+                    source: 
+                      type: string
+                    sourceUrl: 
+                      type: string
+                    signerInputV1: 
+                      type: string
+                asset: 
+                  type: object
+                  properties: 
+                    id: 
+                      type: string
+                    logoUri: 
+                      type: string
+                    name: 
+                      type: string
+                    symbol: 
+                      type: string
+                    executionType: 
+                      type: string
+                    explorerUri: 
+                      type: string
+                    contractAddress: 
+                      type: string
+                    rateUsd: 
+                      type: string
+                transaction: 
+                  type: object
+                  properties: 
+                    id: 
+                      type: string
+                    displayId: 
+                      type: string
+                    toAddress: 
+                      type: string
+                vault: 
+                  type: object
+                  properties: 
+                    id: 
+                      type: string
+                    name: 
+                      type: string
+                    createdAt: 
+                      type: string
+                      format: date-time
+                    reshareNonce: 
+                      type: integer
+                      format: int32
+                    status: 
+                      type: string
+                    balanceBtc: 
+                      type: string
+                    balanceUsd: 
+                      type: string
+                    visibleAssets: 
+                      type: array
+                      items: 
+                        type: object
+                        properties: 
+                          id: 
+                            type: string
+                          publicKey: 
+                            type: string
+                          explorerUri: 
+                            type: string
+                          balanceOriginal: 
+                            type: string
+                          balanceBtc: 
+                            type: string
+                          balanceUsd: 
+                            type: string
+                          asset: 
+                            type: object
+                            properties: 
+                              id: 
+                                type: string
+                              logoUri: 
+                                type: string
+                              name: 
+                                type: string
+                              symbol: 
+                                type: string
+                              executionType: 
+                                type: string
+                              explorerUri: 
+                                type: string
+                              contractAddress: 
+                                type: string
+                              rateUsd: 
+                                type: string
+                    signingParty: 
+                      type: object
+                      properties: 
+                        id: 
+                          type: string
+                        createdAt: 
+                          type: string
+                          format: date-time
+                        updatedAt: 
+                          type: string
+                          format: date-time
+                        deletedAt: 
+                          type: string
+                        threshold: 
+                          type: integer
+                          format: int32
+                        signers: 
+                          type: array
+                          items: 
+                            type: object
+                            properties: 
+                              id: 
+                                type: string
+                              status: 
+                                type: string
+                              createdAt: 
+                                type: string
+                                format: date-time
+                              weight: 
+                                type: integer
+                                format: int32
+                              device: 
+                                type: object
+                                properties: 
+                                  id: 
+                                    type: string
+                                  name: 
+                                    type: string
+                                  publicKey: 
+                                    type: string
+                                  algorithm: 
+                                    type: string
+                                  deletedAt: 
+                                    type: string
+                                  createdAt: 
+                                    type: string
+                                    format: date-time
+                                  user: 
+                                    type: object
+                                    properties: 
+                                      id: 
+                                        type: string
+                                      profile: 
+                                        type: object
+                                        properties: 
+                                          firstName: 
+                                            type: string
+                                          lastName: 
+                                            type: string
+                                          fullName: 
+                                            type: string
+                                          email: 
+                                            type: string
+                                          initials: 
+                                            type: string
+                                          profilePictureUri: 
+                                            type: string
+                    curves: 
+                      type: array
+                      items: 
+                        type: object
+                        properties: 
+                          id: 
+                            type: string
+                          algorithm: 
+                            type: string
+                          curve: 
+                            type: string
+                          publicKey: 
+                            type: string
+                          xpub: 
+                            type: string
+                createdByUser: 
+                  type: object
+                  properties: 
+                    id: 
+                      type: string
+                    profile: 
+                      type: object
+                      properties: 
+                        fullName: 
+                          type: string
+                        firstName: 
+                          type: string
+                        lastName: 
+                          type: string
+                        email: 
+                          type: string
+                        initials: 
+                          type: string
+                        profilePictureUri: 
+                          type: string
+                    devices: 
+                      type: array
+                      items: 
+                        type: object
+                        properties: 
+                          id: 
+                            type: string
+                          uuid: 
+                            type: string
+                          name: 
+                            type: string
+                          publicKey: 
+                            type: string
+                          algorithm: 
+                            type: string
+                          deletedAt: 
+                            type: string
+                          createdAt: 
+                            type: string
+                            format: date-time
+        transaction-approval-resp:
+            type: object
+            required:
+                - status
+                - nonce
+            properties:
+                status:
+                    type: string
+                    enum: [approved, rejected]
+                nonce:
+                    type: integer
+        reshare-approval-req:
+            type: object
+            required:
+                - ReshareRequest
+            definitions: 
+              ReshareRequest:
+                id: 
+                  type: string
+                displayId: 
+                  type: string
+                createdAt: 
+                  type: string
+                  format: date-time
+                expiresAt: 
+                  type: string
+                  format: date-time
+                reshareRequestStatus: 
+                  type: string
+                newThreshold: 
+                  type: integer
+                  format: int32
+                originalThreshold: 
+                  type: integer
+                  format: int32
+                vault: 
+                  type: object
+                  properties: 
+                    signingParty: 
+                      type: object
+                      properties: 
+                        oldThreshold: 
+                          type: integer
+                          format: int32
+                    id: 
+                      type: string
+                    name: 
+                      type: string
+                    createdAt: 
+                      type: string
+                      format: date-time
+                    reshareNonce: 
+                      type: integer
+                      format: int32
+                    status: 
+                      type: string
+                    balanceBtc: 
+                      type: string
+                    balanceUsd: 
+                      type: string
+                    visibleAssets: 
+                      type: array
+                      items: 
+                        type: object
+                        properties: 
+                          id: 
+                            type: string
+                          publicKey: 
+                            type: string
+                          explorerUri: 
+                            type: string
+                          balanceOriginal: 
+                            type: string
+                          balanceBtc: 
+                            type: string
+                          balanceUsd: 
+                            type: string
+                          asset: 
+                            type: object
+                            properties: 
+                              id: 
+                                type: string
+                              logoUri: 
+                                type: string
+                              name: 
+                                type: string
+                              symbol: 
+                                type: string
+                              executionType: 
+                                type: string
+                              explorerUri: 
+                                type: string
+                              contractAddress: 
+                                type: string
+                              rateUsd: 
+                                type: string
+                    curves: 
+                      type: array
+                      items: 
+                        type: object
+                        properties: 
+                          id: 
+                            type: string
+                          algorithm: 
+                            type: string
+                          curve: 
+                            type: string
+                          publicKey: 
+                            type: string
+                          xpub: 
+                            type: string
+                newSigners: 
+                  type: array
+                  items: 
+                    type: object
+                    properties: 
+                      id: 
+                        type: string
+                      status: 
+                        type: string
+                      createdAt: 
+                        type: string
+                        format: date-time
+                      weight: 
+                        type: integer
+                        format: int32
+                      device: 
+                        type: object
+                        properties: 
+                          id: 
+                            type: string
+                          name: 
+                            type: string
+                          publicKey: 
+                            type: string
+                          algorithm: 
+                            type: string
+                          deletedAt: 
+                            type: string
+                          createdAt: 
+                            type: string
+                            format: date-time
+                          user: 
+                            type: object
+                            properties: 
+                              id: 
+                                type: string
+                              profile: 
+                                type: object
+                                properties: 
+                                  firstName: 
+                                    type: string
+                                  lastName: 
+                                    type: string
+                                  fullName: 
+                                    type: string
+                                  email: 
+                                    type: string
+                                  initials: 
+                                    type: string
+                                  profilePictureUri: 
+                                    type: string
+                originalSigners: 
+                  type: array
+                  items: 
+                    type: object
+                    properties: 
+                      id: 
+                        type: string
+                      status: 
+                        type: string
+                      createdAt: 
+                        type: string
+                        format: date-time
+                      weight: 
+                        type: integer
+                        format: int32
+                      device: 
+                        type: object
+                        properties: 
+                          id: 
+                            type: string
+                          name: 
+                            type: string
+                          publicKey: 
+                            type: string
+                          algorithm: 
+                            type: string
+                          deletedAt: 
+                            type: string
+                          createdAt: 
+                            type: string
+                            format: date-time
+                          user: 
+                            type: object
+                            properties: 
+                              id: 
+                                type: string
+                              profile: 
+                                type: object
+                                properties: 
+                                  firstName: 
+                                    type: string
+                                  lastName: 
+                                    type: string
+                                  fullName: 
+                                    type: string
+                                  email: 
+                                    type: string
+                                  initials: 
+                                    type: string
+                                  profilePictureUri: 
+                                    type: string
+                foundedSigningParty: 
+                  type: object
+                  properties: 
+                    id: 
+                      type: string
+                    createdAt: 
+                      type: string
+                    updatedAt: 
+                      type: string
+                    deletedAt: 
+                      type: string
+                    threshold: 
+                      type: integer
+                      format: int32
+                    signers: 
+                      type: string
+                      format: nullable
+                createdByUser: 
+                  type: object
+                  properties: 
+                    id: 
+                      type: string
+                    profile: 
+                      type: object
+                      properties: 
+                        fullName: 
+                          type: string
+                        firstName: 
+                          type: string
+                        lastName: 
+                          type: string
+                        email: 
+                          type: string
+                        initials: 
+                          type: string
+                        profilePictureUri: 
+                          type: string
+                    devices: 
+                      type: array
+                      items: 
+                        type: object
+                        properties: 
+                          id: 
+                            type: string
+                          uuid: 
+                            type: string
+                          name: 
+                            type: string
+                          publicKey: 
+                            type: string
+                          algorithm: 
+                            type: string
+                          deletedAt: 
+                            type: string
+                          createdAt: 
+                            type: string
+                            format: date-time    
+        reshare-approval-resp:
+            type: object
+            required:
+                - status
+                - nonce
+            properties:
+              status:
+                type: string
+                enum: [approved, rejected]
+              nonce:
+                type: integer
+ 
