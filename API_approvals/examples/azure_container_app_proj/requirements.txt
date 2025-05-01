@@ -3,4 +3,4 @@
 # Manually managing azure-functions-worker may cause unexpected issues
 
 azure-functions
-cryptography==43.0.1 
+cryptography==44.0.1 
