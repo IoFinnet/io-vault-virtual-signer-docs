@@ -4,27 +4,22 @@
 
 ### For Developers
 
-The main README.md mentions that the customer's API that implements approval/rejection/abstention calls must implement the
-HTTP Message Signatures protocol. The `lambda` folder contains a sample
-NodeJS script for use as a AWS lambda. The `azure_container_app_proj` folder contains a sample Azure Container App with a
+The customer's API that implements approval/rejection/abstention calls must implement the
+HTTP Message Signatures protocol. The `lambda-js` and `lambda-python` folders contain sample
+NodeJS and Python scripts for use as AWS lambda. The `azure_container_app_proj` folder also contains a sample Azure Container App with another
 Python Function that can support the development of an API for approvals. This project will deploy the Python
-script within a Docker image. *Note that both NodeJS and Python scripts refer to cryptographic libraries. It is
+script within a Docker image. *Note that the NodeJS and Python scripts refer to cryptographic libraries. It is
 common for cryptographic libraries to contain native bindings that are CPU-specific. By deploying these projects
 as Docker containers, one avoids problems of cross-platform incompatibilities.*
 `azure_container_app_proj` contains a Dockerfile and the section below contains deployment instructions. 
-`lambda`, in turn, contains only the sample NodeJS script.
+`lambda-js` and `lambda-python`, in turn, contain only sample scripts.
 
 ### On the request contents
-The Virtual Signer sends requests serialized as JSON to the customer's API. That is, the body of the request in its
-entirety is the JSON serialization of two vault objects, depending on the type of user action: ReshareRequest or
-TransactionRequest. See https://docs.iofinnet.com/reference/vault-objects#resharerequest and
-https://docs.iofinnet.com/reference/vault-objects#transactionrequest for the details of these objects.
-A ReshareRequest may represent a vault creation or a request to reshare, that is, to change the party composition
-and/or weights of the vault. A TransactionRequest represents a request to sign either a transaction (as in a
-transfer, a mint, a burn, etc) or a sign operation (as in a signature of data in a standard format).
+The Virtual Signer sends requests (as an HTTP client) serialized as JSON to the customer's API when `"ApprovalMode"` in its configuration is set to `"API"`.
+See https://docs.iofinnet.com/docs/approve-with-api-sample-requests#/ for the details of these requests.
 
 ### On response signatures
-The request and the response follow the HTTP Message Signatures protocol ( https://datatracker.ietf.org/doc/draft-ietf-httpbis-message-signatures/ ).
+The request and the response must follow the HTTP Message Signatures protocol ( https://datatracker.ietf.org/doc/draft-ietf-httpbis-message-signatures/ ).
 The sample scripts have an Ed25519 private key. They take a JSON that is the body of the response to produce
 a content digest and a signature. This is a sample response body:
 
@@ -46,9 +41,9 @@ produces the signed response, following the HTTP Message Signatures protocol:
 --header 'VS-Nonce: 83727271' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "__typename": "TransactionRequest",
-    "amountOriginal": "0.00606103",
-    "amountUsd": "2.78440028823084577",
+    "__typename": "OperationTransferOut_v3",
+    "id" : "xw8ufea4rdtaaaas1ck89htz",
+    ...
 }'
 *   Trying 4.157.75.188:443...
 * Connected to vsapprovaltestfunc.greenbay-b1c1bd0a.eastus.azurecontainerapps.io (4.157.75.188) port 443 (#0)
@@ -60,7 +55,7 @@ produces the signed response, following the HTTP Message Signatures protocol:
 > Accept-Signature: sig1=("content-type" "digest");nonce=83727271;keyid="eddsa-key"
 > VS-Nonce: 83727271
 > Content-Type: application/json
-> Content-Length: 439
+> Content-Length: 1939
 > 
 * We are completely uploaded and fine
 < HTTP/2 200 
